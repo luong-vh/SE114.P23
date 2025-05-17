@@ -56,51 +56,13 @@ public class Profile extends AppCompatActivity {
         logOut.setOnClickListener(v -> {
             Logout();
         });
-        List<Student> students = new ArrayList<Student>();
-        students.add(new Student("Nguyen Van A", "10/2/1999"));
-        students.add(new Student("Nguyen Tan B",  "25/10/2000"));
-        students.add(new Student("Tran Xuan B", "13/1/2001"));
 
-        ListView list = (ListView) findViewById(R.id.studentListview);
-        StudentListAdapter adapter = new StudentListAdapter(getApplicationContext(), R.layout.list_item_student, students);
-        list.setAdapter(adapter);
     }
 
     public void Logout(){
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
         finish();
-    }
-    class StudentListAdapter extends ArrayAdapter<Student>{
-        int resource;
-        private List<Student> students;
-        public StudentListAdapter(Context context, int resource, List<Student> students) {
-            super(context, resource, students);
-            this.students = students;
-            this.resource = resource;
-        }
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            View v = convertView;
-            if (v == null){
-                LayoutInflater vi;
-                vi = LayoutInflater.from(this.getContext());
-                v = vi.inflate(this.resource,null);
-            }
-            Student s = getItem(position);
-
-            if (s!=null){
-                TextView nameTextView = (TextView) v.findViewById(R.id.name);
-                TextView dobTextView = (TextView) v.findViewById(R.id.dob);
-
-                if(nameTextView!=null)
-                    nameTextView.setText(s.getName());
-                if(dobTextView!=null)
-                    dobTextView.setText(String.valueOf(s.getDoB()));
-            }
-            return v;
-        }
     }
 
 

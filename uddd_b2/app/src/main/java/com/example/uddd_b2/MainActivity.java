@@ -32,9 +32,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
     private Account[] accounts = {
-            new Account("ID1", "user1", 123456, "01/01/2000", "Description 1", "Dep1", R.drawable.nv1),
-            new Account("ID2", "user2", 234567, "02/02/2001", "Description 2", "Dep2", R.drawable.nv2),
-            new Account("ID3", "user3", 345678, "03/03/2002", "Description 3", "Dep3", R.drawable.nv3),
+            new Account("23520905", "Võ Hồng Lương", 123456, "25/10/2005", "Description 1", "Department 1", R.drawable.avt1),
+            new Account("23520906", "Nguyễn Văn A", 123456, "5/5/20055", "Description 2", "Department 2", R.drawable.avt2),
+            new Account("23520907", "Nguyễn Văn B", 123456, "7/7/2007", "Description 3", "Department 3", R.drawable.avt3),
     };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
