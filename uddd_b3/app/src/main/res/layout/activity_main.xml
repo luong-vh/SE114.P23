@@ -5,7 +5,11 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,16 +35,6 @@
             android:divider="#CCCCCC"
             android:dividerHeight="1dp"
             android:layout_marginBottom="20dp"/>
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/addBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginBottom="20dp"
-            android:layout_marginEnd="20dp"
-            app:backgroundTint="@color/purple"
-            app:srcCompat="@drawable/baseline_add_24"
-            />
 
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

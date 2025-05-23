@@ -10,6 +10,7 @@ public class TodoItem implements Serializable {
     private String date;
     private String description;
     private boolean done;
+    private  boolean selected;
 
     public TodoItem(String title, @Nullable String description, String date, boolean done) {
         this.title = title;
@@ -45,5 +46,12 @@ public class TodoItem implements Serializable {
 
     public void setDone(boolean done) {
         this.done = done;
+    }
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

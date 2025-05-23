@@ -8,7 +8,14 @@
     android:layout_marginStart="30dp"
     android:layout_marginEnd="30dp"
     android:gravity="center_vertical">
-
+    <CheckBox
+        android:id="@+id/select_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:text=""
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
     <!-- Tên công việc -->
     <TextView
         android:id="@+id/task_title"

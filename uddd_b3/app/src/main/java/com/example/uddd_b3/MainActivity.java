@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
@@ -30,24 +34,34 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     List<TodoItem> items = new ArrayList<TodoItem>();
     TodoAdapter todoAdapter;
+    TextView optionTV;
+    ActivityResultLauncher<Intent> launcher;
+    boolean selectMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        optionTV = findViewById(R.id.textView);
+        Toolbar toolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+        selectMode = false;
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        ActivityResultLauncher<Intent> launcher = registerForActivityResult(
+        launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -88,20 +102,40 @@ public class MainActivity extends AppCompatActivity {
                 launcher.launch(intent);
             }
         }
+
         );
-
-        FloatingActionButton fab = findViewById(R.id.addBtn);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Xử lý khi FAB được bấm
-                Intent intent = new Intent(MainActivity.this, detail_task.class);
-                intent.putExtra("state", "add");
-                launcher.launch(intent);
-            }
-        });
-
     }
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.main_add){
+            Intent intent = new Intent(MainActivity.this, detail_task.class);
+            intent.putExtra("state", "add");
+            launcher.launch(intent);
+        }
+        else if (id == R.id.main_delete){
+            Iterator<TodoItem> iterator = items.iterator();
+            while (iterator.hasNext()) {
+                TodoItem _item = iterator.next();
+                if (_item.isSelected()) {
+                    iterator.remove(); // xóa an toàn
+                }
+            }
+            todoAdapter.notifyDataSetChanged();
+        }
+        else if (id == R.id.main_select){
+            selectMode = !selectMode;
+            todoAdapter.notifyDataSetChanged();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     public class TodoAdapter extends ArrayAdapter<TodoItem> {
         int resource;
@@ -127,15 +161,27 @@ public class MainActivity extends AppCompatActivity {
             TextView titleText = v.findViewById(R.id.task_title);
             TextView dateText = v.findViewById(R.id.task_date);
             CheckBox checkBox = v.findViewById(R.id.task_done_checkbox);
+            CheckBox select = v.findViewById(R.id.select_checkbox);
 
             checkBox.setOnCheckedChangeListener(null); // tránh gán trùng
             checkBox.setChecked(todo.isDone());
-
+            select.setOnCheckedChangeListener(null); // tránh gán trùng
+            select.setChecked(false);
+            todo.setSelected(false);
+            if (selectMode){
+                select.setVisibility(View.VISIBLE);
+            }
+            else {
+                select.setVisibility(View.GONE);
+            }
             titleText.setText(todo.getTitle());
             dateText.setText(todo.getDate());
 
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 todo.setDone(isChecked);
+            });
+            select.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                todo.setSelected(isChecked);
             });
 
             return v;
