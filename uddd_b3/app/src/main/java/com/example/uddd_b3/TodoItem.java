@@ -4,8 +4,10 @@ package com.example.uddd_b3;
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class TodoItem implements Serializable {
+    private  String id;
     private String title;
     private String date;
     private String description;
@@ -17,6 +19,22 @@ public class TodoItem implements Serializable {
         this.description = description;
         this.date = date;
         this.done = done;
+        this.id = UUID.randomUUID().toString();
+    }
+    public TodoItem(String id,String title, String description, String date, boolean done) {
+        this.title = title;
+        this.description = description;
+        this.date = date;
+        this.done = done;
+        this.id = id;
+    }
+    public  String getId()
+    {
+        return id;
+    }
+    public  void setId(String id)
+    {
+        this.id = id;
     }
 
     public String getTitle() {

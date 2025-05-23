@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     TodoAdapter todoAdapter;
     TextView optionTV;
     ActivityResultLauncher<Intent> launcher;
+    TodoRepo repo;
     boolean selectMode = false;
 
     @Override
@@ -60,32 +61,22 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        repo = new TodoRepo(this);
         launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent intent = result.getData();
-                            int position = intent.getIntExtra("position",-1);
-                            TodoItem item = (TodoItem) intent.getSerializableExtra("item");
-                            if (position == -1 ){
-                                if (item.getTitle()!="" && item.getDate()!="") items.add(item);
-                            }
-                            else {
-                                items.set(position,item);
-                            }
+
+                            items.clear();
+                            items.addAll(repo.loadAll());
                             todoAdapter.notifyDataSetChanged();
 
                         }
                     }
                 });
-
-        items.add(new TodoItem("task1", "description", "25/10/2025", false));
-        items.add(new TodoItem("task2", null, "25/10/2025", false));
-
-
+        items = repo.loadAll();
         ListView taskListview = (ListView) findViewById(R.id.taskListview);
         todoAdapter = new TodoAdapter(this, R.layout.list_view_item, items);
         taskListview.setAdapter(todoAdapter);
@@ -97,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(MainActivity.this, detail_task.class);
                 intent.putExtra("state", "edit");
-                intent.putExtra("item", item);
+                intent.putExtra("id", item.getId());
                 intent.putExtra("position",position);
                 launcher.launch(intent);
             }
@@ -124,9 +115,11 @@ public class MainActivity extends AppCompatActivity {
             while (iterator.hasNext()) {
                 TodoItem _item = iterator.next();
                 if (_item.isSelected()) {
-                    iterator.remove(); // xóa an toàn
+                    repo.delete(_item.getId());
                 }
             }
+            items.clear();
+            items.addAll(repo.loadAll());
             todoAdapter.notifyDataSetChanged();
         }
         else if (id == R.id.main_select){
@@ -179,6 +172,10 @@ public class MainActivity extends AppCompatActivity {
 
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 todo.setDone(isChecked);
+                repo.update(todo);
+                items.clear();
+                items.addAll(repo.loadAll());
+                todoAdapter.notifyDataSetChanged();
             });
             select.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 todo.setSelected(isChecked);

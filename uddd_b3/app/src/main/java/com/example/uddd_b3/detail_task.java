@@ -29,6 +29,7 @@ public class detail_task extends AppCompatActivity {
     String state;
     TodoItem item;
     int position;
+    TodoRepo repo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +40,7 @@ public class detail_task extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        repo = new TodoRepo(this);
         Intent intent = getIntent();
         TextView tv = findViewById(R.id.textView);
         EditText title = findViewById(R.id.edit_Title);
@@ -54,7 +55,7 @@ public class detail_task extends AppCompatActivity {
         else if (state.equals("edit") ){
             tv.setText("Edit Task");
 
-            item = (TodoItem) intent.getSerializableExtra("item");
+            item = repo.getById(intent.getStringExtra("id"));
         }
         position = intent.getIntExtra("position",-1);
         title.setText(item.getTitle());
@@ -71,9 +72,15 @@ public class detail_task extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.putExtra("position",position);
-                intent.putExtra("item",item);
+
+                if (position == -1 ){
+                    if (item.getTitle()!="" && item.getDate()!="") {
+                        repo.addNew(item);
+                    }
+                }
+                else {
+                    boolean update = repo.update(item);
+                }
                 setResult(RESULT_OK, intent);
                 finish();
             }
