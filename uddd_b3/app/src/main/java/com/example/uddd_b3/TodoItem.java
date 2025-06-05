@@ -11,22 +11,25 @@ public class TodoItem implements Serializable {
     private String title;
     private String date;
     private String description;
+    private String members;
     private boolean done;
     private  boolean selected;
 
-    public TodoItem(String title, @Nullable String description, String date, boolean done) {
+    public TodoItem(String title, @Nullable String description, @Nullable String members, String date, boolean done) {
         this.title = title;
         this.description = description;
         this.date = date;
         this.done = done;
         this.id = UUID.randomUUID().toString();
+        this.members = members;
     }
-    public TodoItem(String id,String title, String description, String date, boolean done) {
+    public TodoItem(String id,String title, @Nullable String description,@Nullable String members, String date, boolean done) {
         this.title = title;
         this.description = description;
         this.date = date;
         this.done = done;
         this.id = id;
+        this.members = members;
     }
     public  String getId()
     {
@@ -36,7 +39,12 @@ public class TodoItem implements Serializable {
     {
         this.id = id;
     }
-
+    public String getMembers(){
+        return members;
+    }
+    public void setMembers(String members){
+        this.members = members;
+    }
     public String getTitle() {
         return title;
     }

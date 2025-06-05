@@ -9,18 +9,20 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 
 public class TodoRepo extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Todo.db";
     public static final String TABLE_NAME = "todos";
     public static final String COLUMN_TITLE = "title";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_DESC = "description";
+    public static final String COLUMN_MEMBERS = "members";
     public static final String COLUMN_DATE = "date";
     public static final String COLUMN_IS_DONE = "is_done";
     public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME
             + " (" + COLUMN_ID + " TEXT PRIMARY KEY,"
             + COLUMN_TITLE + " TEXT, "
             + COLUMN_DESC + " TEXT, "
+            + COLUMN_MEMBERS + " TEXT, "
             + COLUMN_DATE + " TEXT, "
             + COLUMN_IS_DONE + " INTEGER " + ")";
     public static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -43,6 +45,7 @@ public class TodoRepo extends SQLiteOpenHelper {
         values.put(COLUMN_ID, item.getId());
         values.put(COLUMN_TITLE, item.getTitle());
         values.put(COLUMN_DESC, item.getDescription());
+        values.put(COLUMN_MEMBERS, item.getMembers());
         values.put(COLUMN_DATE, item.getDate());
         values.put(COLUMN_IS_DONE, item.isDone() ? 1 : 0);
         db.insert(TABLE_NAME, null, values);
@@ -53,6 +56,7 @@ public class TodoRepo extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_TITLE, item.getTitle());
         values.put(COLUMN_DESC, item.getDescription());
+        values.put(COLUMN_MEMBERS, item.getMembers());
         values.put(COLUMN_DATE, item.getDate());
         values.put(COLUMN_IS_DONE, item.isDone() ? 1 : 0);
         int rowAffected = db.update(TABLE_NAME, values,
@@ -72,6 +76,7 @@ public class TodoRepo extends SQLiteOpenHelper {
                 COLUMN_ID,
                 COLUMN_TITLE,
                 COLUMN_DESC,
+                COLUMN_MEMBERS,
                 COLUMN_DATE,
                 COLUMN_IS_DONE
         };
@@ -82,9 +87,10 @@ public class TodoRepo extends SQLiteOpenHelper {
             String id = cursor.getString(0);
             String title = cursor.getString(1);
             String desc = cursor.getString(2);
-            String date = cursor.getString(3);
-            Boolean isDone = cursor.getInt(4)==1;
-            items.add(new TodoItem(id,title, desc,date,isDone));
+            String members = cursor.getString(3);
+            String date = cursor.getString(4);
+            Boolean isDone = cursor.getInt(5)==1;
+            items.add(new TodoItem(id,title, desc,members,date,isDone));
         }
         db.close();
         return items;
@@ -95,6 +101,7 @@ public class TodoRepo extends SQLiteOpenHelper {
                 COLUMN_ID,
                 COLUMN_TITLE,
                 COLUMN_DESC,
+                COLUMN_MEMBERS,
                 COLUMN_DATE,
                 COLUMN_IS_DONE
         };
@@ -104,10 +111,11 @@ public class TodoRepo extends SQLiteOpenHelper {
         if(cursor.moveToFirst()){
             String title = cursor.getString(1);
             String desc = cursor.getString(2);
-            String date = cursor.getString(3);
-            Boolean isDone = cursor.getInt(4)==1;
+            String members = cursor.getString(3);
+            String date = cursor.getString(4);
+            Boolean isDone = cursor.getInt(5)==1;
             db.close();
-            return new TodoItem(id,title, desc,date,isDone);
+            return new TodoItem(id,title, desc,members,date,isDone);
         }
         return null;
     }

@@ -3,7 +3,10 @@ package com.example.uddd_b3;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,8 +32,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import android.Manifest;
+import androidx.core.app.ActivityCompat;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.w3c.dom.Text;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,22 +55,26 @@ public class MainActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launcher;
     TodoRepo repo;
     boolean selectMode = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
         optionTV = findViewById(R.id.textView);
+
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
+
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
         selectMode = false;
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         repo = new TodoRepo(this);
         launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -76,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
         items = repo.loadAll();
         ListView taskListview = (ListView) findViewById(R.id.taskListview);
         todoAdapter = new TodoAdapter(this, R.layout.list_view_item, items);
@@ -95,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         );
+
     }
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
@@ -128,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 
     public class TodoAdapter extends ArrayAdapter<TodoItem> {
@@ -185,6 +202,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
 
 }
