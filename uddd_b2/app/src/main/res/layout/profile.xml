@@ -56,20 +56,19 @@
 
             <TextView
                 android:id="@+id/textView"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Name:"
                 android:textColor="@color/purple"
                 android:textSize="20sp" />
 
-            <TextView
+            <EditText
                 android:id="@+id/name_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="viewEnd"
-                android:layout_weight="1"
+                android:maxLines="1"
                 android:textSize="20dp"
+                android:background="@android:color/transparent"
                 android:textColor="#585858"
                 android:text="Vo Hong Luong" />
         </LinearLayout>
@@ -90,21 +89,20 @@
 
             <TextView
                 android:id="@+id/dob_textView"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textColor="@color/purple"
                 android:textSize="20sp"
-                android:text="Date of birth:" />
+                android:text="Age:" />
 
-            <TextView
-                android:id="@+id/DOB_text"
+            <EditText
+                android:id="@+id/age_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="viewEnd"
-                android:layout_weight="1"
+                android:maxLines="1"
                 android:textSize="20dp"
                 android:textColor="#585858"
+                android:background="@android:color/transparent"
                 android:text="25/10/2005" />
         </LinearLayout>
 
@@ -123,55 +121,21 @@
 
             <TextView
                 android:id="@+id/description_textView"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textColor="@color/purple"
                 android:textSize="20sp"
-                android:text="Description:" />
+                android:text="Salary:" />
 
-            <TextView
-                android:id="@+id/description_text"
+            <EditText
+                android:id="@+id/salary_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="viewEnd"
-                android:layout_weight="1"
                 android:textSize="20dp"
+                android:maxLines="1"
                 android:textColor="#585858"
-                android:text="Description" />
-        </LinearLayout>
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:alpha="0.5"
-            android:layout_margin="10dp"
-            android:background="@color/purple" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/department_textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Department:"
-                android:textColor="@color/purple"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/department_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAlignment="viewEnd"
-                android:layout_weight="1"
-                android:textSize="20dp"
-                android:textColor="#585858"
-                android:text="Department" />
+                android:text="100000"
+                android:background="@android:color/transparent" />
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -189,22 +153,20 @@
 
             <TextView
                 android:id="@+id/ID_View"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textColor="@color/purple"
                 android:textSize="20sp"
                 android:text="ID:" />
 
-            <TextView
+            <EditText
                 android:id="@+id/ID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="viewEnd"
-                android:layout_weight="1"
                 android:textSize="20dp"
-
+                android:maxLines="1"
                 android:textColor="#585858"
+                android:background="@android:color/transparent"
                 android:text="23520905" />
         </LinearLayout>
 
@@ -214,18 +176,69 @@
             android:alpha="0.5"
             android:layout_margin="10dp"
             android:background="@color/purple" />
-
-        <Button
-            android:id="@+id/btn_logout"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_height="60dp"
-            android:text="Logout"
-            android:textSize="18sp"
-            android:layout_marginTop="70dp"
-            android:backgroundTint="@color/purple"
-            app:cornerRadius="20dp" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/purple"
+                android:textSize="20sp"
+                android:text="Profile Image URL:" />
+
+            <EditText
+                android:id="@+id/url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textColor="#585858"
+                android:maxLines="5"
+                android:minLines="5"
+                android:gravity="start|top"
+                android:background="@android:color/transparent"
+                android:text="https://reactnative.dev/img/header_logo.svg"
+                />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:alpha="0.5"
+            android:layout_margin="10dp"
+            android:background="@color/purple" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="30dp"
+            >
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="100dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_height="60dp"
+                android:text="Save"
+                android:textSize="18sp"
+                android:backgroundTint="@color/purple"
+                app:cornerRadius="20dp" />
+            <Button
+                android:id="@+id/btn_close"
+                android:layout_width="100dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_height="60dp"
+                android:text="Close"
+                android:textSize="18sp"
+                android:backgroundTint="@color/purple"
+                app:cornerRadius="20dp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

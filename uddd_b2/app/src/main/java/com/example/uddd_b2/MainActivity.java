@@ -3,8 +3,14 @@ package com.example.uddd_b2;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -12,15 +18,39 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 
 public class MainActivity extends AppCompatActivity {
-
+    Retrofit retrofit;
+    ApiService service;
+    List<Employee> employeeList;
+    EmployeeAdapter adapter;
+    ListView listView;
     ActivityResultLauncher<Intent> launcher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -28,124 +58,134 @@ public class MainActivity extends AppCompatActivity {
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent intent = result.getData();
+                        getAll();
                     }
                 }
             });
-    private Account[] accounts = {
-            new Account("23520905", "Võ Hồng Lương", 123456, "25/10/2005", "Description 1", "Department 1", R.drawable.avt1),
-            new Account("23520906", "Nguyễn Văn A", 123456, "5/5/20055", "Description 2", "Department 2", R.drawable.avt2),
-            new Account("23520907", "Nguyễn Văn B", 123456, "7/7/2007", "Description 3", "Department 3", R.drawable.avt3),
-    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Button loginButton = findViewById(R.id.btn_login);
+        listView = (ListView) findViewById(R.id.employee_list_view);
 
-        loginButton.setOnClickListener(v -> {
-            loginClick();
-        });
-    }
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Employee item = (Employee) parent.getItemAtPosition(position);
 
-    public boolean checkClick(Account[] accounts, Account test) {
-        for (Account account : accounts) {
-            if (account.getMSNV().equals(test.getMSNV()) && account.getPassword() == test.getPassword()) {
-                return true;
+                Intent intent = new Intent(MainActivity.this, Profile.class);
+                intent.putExtra("state", "edit");
+                intent.putExtra("id", item.getId());
+                intent.putExtra("position", position);
+                launcher.launch(intent);
             }
         }
-        return false;
+
+        );
+        retrofit = new Retrofit.Builder()
+                .baseUrl("http://blackntt.net:88")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        service = retrofit.create(ApiService.class);
+
+        employeeList = new ArrayList<>();
+        getAll();
+
     }
 
-    public void loginClick(){
-        EditText nameInput = findViewById(R.id.username_input);
-        EditText passwordInput = findViewById(R.id.password_input);
-        String username = nameInput.getText().toString();
-        String password = passwordInput.getText().toString();
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.main_add) {
+            Intent intent = new Intent(MainActivity.this, Profile.class);
+            intent.putExtra("state", "add");
+            intent.putExtra("id", -1);
+            intent.putExtra("position", -1);
+            launcher.launch(intent);
+        } else if (id == R.id.main_delete) {
+            List<Boolean> selected = adapter.getSelected();
+            final int[] deletedCount = {0};
+            final int[] totalDelete = {0};
+            for (Boolean b : selected) {
+                if (b) totalDelete[0]++;
+            }
+            for (int b = 0; b < selected.size(); b++) {
+                if (selected.get(b)) {
+                    service.deleteEmployeeById(Integer.parseInt(employeeList.get(b).getId())).enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            deletedCount[0]++;
+                            if (deletedCount[0] == totalDelete[0]) {
+                                // Đã xóa hết các nhân viên, gọi lại getAll()
+                                getAll();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            deletedCount[0]++;
+                            if (deletedCount[0] == totalDelete[0]) {
+                                // Đã xóa hết các nhân viên (có thể thất bại một số), gọi lại getAll()
+                                getAll();
+                            }
+                        }
+                    });
+                }
+            }
         }
-        else {
-            int pass = Integer.parseInt(password);
-            Account tempAccount = new Account(username, pass);
-            Account matchedAccount = null;
 
-            for (Account acc : accounts) {
-                if (acc.getMSNV().equals(tempAccount.getMSNV()) && acc.getPassword() == tempAccount.getPassword()) {
-                    matchedAccount = acc;
-                    break;
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void getAll() {
+        Call<List<Employee>> getAllAPI = service.getAll();
+
+        getAllAPI.enqueue(new Callback<List<Employee>>() {
+            @Override
+            public void onResponse(Call<List<Employee>> call, Response<List<Employee>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Employee> employees = response.body();
+                    employeeList.clear();
+                    employeeList.addAll(employees);
+                    adapter = new EmployeeAdapter(MainActivity.this, R.layout.employee_item_listview, employeeList);
+                    listView.setAdapter(adapter);
+
+
+                } else {
+                    Log.e("API", "Response error: " + response.code());
                 }
             }
 
-            if (matchedAccount != null) {
-                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, Profile.class);
-                intent.putExtra("account", matchedAccount); // ✅ truyền đúng object đủ thông tin
-//                startActivity(intent);
-                launcher.launch(intent);
-            } else {
-                Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onFailure(Call<List<Employee>> call, Throwable t) {
+                Log.e("API", "Failure: " + t.getMessage());
             }
-        }
+        });
     }
+
+
+
+
 
 }
 
-class Account  implements Serializable {
-    private String MSNV;
-    private String name;
-    private int password;
-    private String DOB;
-    private String desc;
-    private String department;
-    private int avt;
 
-    public Account(String MSNV, int password) {
-        this.MSNV = MSNV;
-        this.password = password;
-    }
-    public Account() {}
-    public Account(String MSNV, String name, int password, String DOB, String desc, String department, int avt) {
-        this.MSNV = MSNV;
-        this.name = name;
-        this.password = password;
-        this.DOB = DOB;
-        this.desc = desc;
-        this.department = department;
-        this.avt = avt;
-    }
-
-    public Account(Account a){
-        this.MSNV = a.MSNV;
-        this.password = a.password;
-        this.name = a.name;
-        this.DOB = a.DOB;
-        this.desc = a.desc;
-        this.department = a.department;
-    }
-    public String getMSNV() {
-        return MSNV;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getPassword() {
-        return password;
-    }
-    public String getDescription() {
-        return desc;
-    }
-    public String getDOB() {
-        return DOB;
-    }
-    public String getDepartment(){ return department;}
-    public int getAvt(){return avt;}
-}

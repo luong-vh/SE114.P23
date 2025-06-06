@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:layout_marginBottom="0dp"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/employee_name"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="Tên Nhân Viên"
+        android:textSize="16sp"
+        android:textColor="#000000"
+        android:ellipsize="end" />
+    <TextView
+        android:id="@+id/employee_age"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Tuổi: 30"
+        android:textSize="16sp"
+        android:textColor="#000000"
+        android:gravity="start"
+        android:ellipsize="end"
+        android:paddingStart="8dp" />
+    <CheckBox
+        android:id="@+id/select_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:text=""
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_gravity="end"/>
+</LinearLayout>
